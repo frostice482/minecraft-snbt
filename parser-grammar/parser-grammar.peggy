@@ -48,9 +48,17 @@ LongArray = '[' _ 'L' _ ';' _ l:( v:LongArrayContent _ NextList? { return v } )*
 StringNBT = v:String { return nbt.string(v) }
 
 List = '[' _ l:( v:Value _ NextList? { return v } )* ']' {
+    const listType = l[0]?.type
+    const vlist = []
+
+    for (const [i, {type, value}] of l.entries()) {
+    	if (type !== listType) throw new TypeError(`${i}: Expecting type ${listType}, got ${type}`)
+        vlist.push(value)
+    }
+
 	return nbt.list({
-    	type: l[0]?.type ?? nbt.TagType.byte,
-        value: l.map(v => v.value)
+    	type: listType ?? 'byte',
+        value: vlist
     })
 }
 Compound = '{' _ l:( k:CompoundKey _ ':' _ v:Value _ NextList? { return [k, v] } )* '}' { return nbt.comp(Object.fromEntries(l)) }
