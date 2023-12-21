@@ -4,9 +4,7 @@
   "description": "Serialize / Deserialize Minecraft NBT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "scripts": {
-    "postinstall": "node parser-grammar/compile.js"
-  },
+  "scripts": {},
   "keywords": [
     "minecraft",
     "minecraft-snbt"
