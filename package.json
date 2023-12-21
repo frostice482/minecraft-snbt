@@ -1,0 +1,23 @@
+{
+  "name": "minecraft-snbt",
+  "version": "1.0.0",
+  "description": "Parses and stringifies serialized NBT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {},
+  "keywords": [
+    "minecraft",
+    "minecraft-snbt"
+  ],
+  "author": "frostice481",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/uglify-js": "^3.17.4",
+    "peggy": "^3.0.2",
+    "uglify-js": "^3.17.4"
+  },
+  "dependencies": {
+    "prismarine-nbt": "^2.2.1"
+  }
+}
