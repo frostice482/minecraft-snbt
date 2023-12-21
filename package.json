@@ -4,7 +4,9 @@
   "description": "Parses and stringifies serialized NBT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "scripts": {},
+  "scripts": {
+    "postinstall": "node compile-parser.js"
+  },
   "keywords": [
     "minecraft",
     "minecraft-snbt"
