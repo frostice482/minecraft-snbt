@@ -67,11 +67,11 @@ CompoundKey = $[a-zA-Z0-9\_\-\.\+]+ / String
 NextList = ',' _
 
 // String
-String = m:(StringSingleQuote / StringDoubleQuote) { return m[1].join('') }
+String = m:(StringSingleQuote / StringDoubleQuote) { return JSON.parse('"' + m[1].join('') + '"') }
 
 StringSingleQuote = "'" (StringBodyEscape / "\\'" { return "'" } / [^\\'])* "'"
-StringDoubleQuote = '"' (StringBodyEscape / '\\"' { return '"' } / [^\\"])* '"'
-StringBodyEscape = $( '\\' ([rntvf\\0] / 'u' Hex Hex Hex Hex / 'x' Hex Hex) )
+StringDoubleQuote = '"' (StringBodyEscape / '\\"' / [^\\"])* '"'
+StringBodyEscape = $( '\\' ([rntvf\\0] / 'u' Hex Hex Hex Hex) )
 
 // Number
 Number = $( '-'? (Num_Digit Num_Decimal? / Num_Digit? Num_Decimal) Num_Exp? )
