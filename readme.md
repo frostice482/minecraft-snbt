@@ -41,7 +41,7 @@ after installing node packages.
 
 ## Stringify SNBT to NBT
 
-To parse the SNBT, simply call `snbt.parse` function with the SNBT as its argument. It retrns SNBT string.
+To stringify the NBT, simply call `snbt.stringify` function with the NBT as its argument. It retrns SNBT string.
 
 ```js
 // Expected value:
