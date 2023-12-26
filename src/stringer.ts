@@ -2,7 +2,17 @@ import { Tags, TagType } from 'prismarine-nbt'
 
 const compoundNameUnquoted = /^[a-zA-Z0-9_\-\.\+]+$/
 
-export function stringify(data: Tags[TagType]): string {
+const typeArrayCharMap = {
+    [TagType.ByteArray]: {charUp: 'B', charDown: 'b'},
+    [TagType.ShortArray]: {charUp: 'S', charDown: 's'},
+    [TagType.IntArray]: {charUp: 'I', charDown: 'i'},
+    [TagType.LongArray]: {charUp: 'L', charDown: 'l'},
+}
+Object.setPrototypeOf(typeArrayCharMap, null)
+
+function stringifyInternal(data: Tags[TagType], space: string, level: number): string {
+    const curspace = space ? '\n' + space.repeat(level) : ''
+    
     switch (data.type) {
         case TagType.Byte: return data.value + 'b'
         case TagType.Short: return data.value + 's'
@@ -12,31 +22,54 @@ export function stringify(data: Tags[TagType]): string {
         case TagType.Double: return data.value + 'd'
         case TagType.String: return JSON.stringify(data.value)
 
-        case TagType.ByteArray: return '[B;' + data.value.join('b,') + 'b]'
-        //case TagType.ShortArray: return '[S;' + data.value.join('s,') + 's]'
-        case TagType.IntArray: return '[I;' + data.value.join('i,') + 'i]'
-        case TagType.LongArray: return '[L;' + data.value.join('l,') + 'l]'
+        case TagType.ByteArray: 
+        case TagType.ShortArray: 
+        case TagType.IntArray: 
+        case TagType.LongArray: {
+            const {charUp, charDown} = typeArrayCharMap[data.type]
+            if (!data.value.length) return '[' + charUp + ';]'
 
-        case TagType.List: return '['
-            + data.value.value.map(
-                v => stringify({ type: data.value.type, value: v } as Tags[TagType])
-            )
-        + ']'
+            const nxtspace = curspace ? curspace + space : ''
 
-        case TagType.Compound:
+            return '[' + charUp + ';'
+                + nxtspace + data.value.join(charDown + ',' + nxtspace) + charDown
+                + curspace + ']'
+        }
+
+        case TagType.List: {
+            const { value: { type, value } } = data
+            if (!value.length) return '[]'
+
+            const nxtspace = curspace ? curspace + space : ''
+
+            return '['
+                + value.map( value => nxtspace + stringifyInternal({ type, value } as Tags[TagType], space, level + 1) )
+                + curspace + ']'
+        }
+
+        case TagType.Compound: {
+            const ent = Object.entries(data.value)
+            if (!ent.length) return '{}'
+
+            const nxtspace = curspace ? curspace + space : ''
+            const kvsep = nxtspace ? ': ' : ':'
+
             return '{'
-                + Object.entries(data.value)
-                    .map(
-                        ([k, v]) =>
-                            (compoundNameUnquoted.test(k) ? k : JSON.stringify(k))
-                            + ':'
-                            + stringify(v as any
-                        )
-                    )
-                    .join(',')
-            + '}'
+                + ent.map(([k, v]) =>
+                    nxtspace + (compoundNameUnquoted.test(k) ? k : JSON.stringify(k))
+                    + kvsep
+                    + stringifyInternal(v as any, space, level + 1
+                ))
+                + curspace + '}'
+        }
         
         default:
+            //@ts-ignore
             throw new TypeError(`Unknown NBT type ${data.type}`)
     }
+}
+
+export function stringify(data: Tags[TagType], spaces: string | number = 0): string {
+    if (typeof spaces === 'number') spaces = ' '.repeat(spaces)
+    return stringifyInternal(data, spaces, 0)
 }
