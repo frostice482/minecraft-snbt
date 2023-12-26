@@ -1,7 +1,7 @@
 {
   "name": "minecraft-snbt",
   "version": "1.0.0",
-  "description": "Serialize / Deserialize Minecraft NBT",
+  "description": "Handles conversion of Minecraft SNBT to NBT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
